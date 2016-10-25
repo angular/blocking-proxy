@@ -1,7 +1,14 @@
+# Idea configs
+.idea
+
+# TypeScript output
+built/
+
 # Logs
 logs
 *.log
 npm-debug.log*
+chromedriver.log
 
 # Runtime data
 pids

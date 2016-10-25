@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <title>My AngularJS App</title>
+  <link rel="stylesheet" href="app.css"/>
+</head>
+<body>
+  <ul class="menu">
+    <li><a href="#/async">async</a></li>
+  </ul>
+
+  <div ng-view></div>
+
+  <div>Angular seed app: v<span app-version></span></div>
+
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/angular/angular-route.min.js"></script>
+
+  <script src="components/app-version.js"></script>
+  <script src="async/async.js"></script>
+  <script src="polling/polling.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

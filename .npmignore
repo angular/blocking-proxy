@@ -1,0 +1,16 @@
+docs/
+lib/
+scripts/
+spec/
+
+.gitattributes
+.github/
+.gitignore
+.jshintrc
+.npmignore
+.travis.yml
+chromedriver.log
+libpeerconnection.log
+npm-debug.log
+xmloutput*
+release.md
