@@ -29,7 +29,7 @@ gulp.task('jshint', function(done) {
 });
 
 gulp.task('clang-check', function() {
-  return gulp.src(['lib/**/*.ts'])
+  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts'])
       .pipe(gulpFormat.checkFormat('file', clangFormat))
       .on('warning', function(e) {
     console.log(e);

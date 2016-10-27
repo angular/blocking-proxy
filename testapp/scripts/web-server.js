@@ -5,10 +5,9 @@ var bodyParser = require('body-parser')
 var optimist = require('optimist');
 var util = require('util');
 var path = require('path');
-var env = require('../../spec/environment.js');
 
 var testApp = express();
-var DEFAULT_PORT = process.env.HTTP_PORT || env.webServerDefaultPort;
+var DEFAULT_PORT = process.env.HTTP_PORT;
 var testAppDir = path.resolve(__dirname, '..');
 var defaultAngular = require(path.join(testAppDir, 'ng1/lib/angular_version.js'));
 
