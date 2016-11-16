@@ -7,7 +7,7 @@ var util = require('util');
 var path = require('path');
 
 var testApp = express();
-var DEFAULT_PORT = process.env.HTTP_PORT;
+var DEFAULT_PORT = process.env.HTTP_PORT | 8081;
 var testAppDir = path.resolve(__dirname, '..');
 var defaultAngular = require(path.join(testAppDir, 'ng1/lib/angular_version.js'));
 

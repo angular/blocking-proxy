@@ -1,8 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var clangFormat = require('clang-format');
-var gulpFormat = require('gulp-clang-format');
 var runSequence = require('run-sequence');
 var spawn = require('child_process').spawn;
 
@@ -28,28 +26,30 @@ gulp.task('jshint', function(done) {
     'spec/install/**/*.js']);
 });
 
-gulp.task('clang-check', function() {
-  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts'])
-      .pipe(gulpFormat.checkFormat('file', clangFormat))
-      .on('warning', function(e) {
-    console.log(e);
-  });
+gulp.task('format:enforce', () => {
+  const format = require('gulp-clang-format');
+  const clangFormat = require('clang-format');
+  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts']).pipe(
+    format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
 });
 
-gulp.task('clang', function() {
-  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts'])
-      .pipe(gulpFormat.format('file', clangFormat))
-      .on('warning', function(e) {
-    console.log(e);
-  });
+gulp.task('format', () => {
+  const format = require('gulp-clang-format');
+  const clangFormat = require('clang-format');
+  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts'], { base: '.' }).pipe(
+    format.format('file', clangFormat)).pipe(gulp.dest('.'));
 });
 
 gulp.task('tsc', function(done) {
   runSpawn(done, 'node', ['node_modules/typescript/bin/tsc']);
 });
 
+gulp.task('lint', function(done) {
+  runSequence('jshint', 'format:enforce', done);
+});
+
 gulp.task('prepublish', function(done) {
-  runSequence(['jshint', 'clang'],'tsc', 'built:copy', done);
+  runSequence('lint' ,'tsc', 'built:copy', done);
 });
 
 gulp.task('pretest', function(done) {

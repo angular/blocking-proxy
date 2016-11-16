@@ -42,9 +42,11 @@
   "scripts": {
     "prepublish": "gulp prepublish",
     "start": "node built/lib/bin.js",
+    "webdriver": "webdriver-manager update && webdriver-manager start",
     "test": "jasmine-ts spec/unit/**/*.ts",
     "test:auto": "find lib spec | entr jasmine-ts spec/unit/**/*.ts",
-    "testapp": "node testapp/scripts/web-server.js",
+    "testapp": "cd testapp && npm start",
+    "install_testapp": "cd testapp && npm install",
     "test:e2e": "jasmine-ts spec/e2e/**/*.ts"
   },
   "jshintConfig": {

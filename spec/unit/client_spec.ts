@@ -1,4 +1,4 @@
-import {BPClient, BlockingProxy} from '../../lib/';
+import {BlockingProxy, BPClient} from '../../lib/';
 
 describe('BlockingProxy Client', () => {
   let bp: BlockingProxy;

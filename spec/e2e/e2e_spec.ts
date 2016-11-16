@@ -3,7 +3,9 @@ import {getTestEnv} from './environment';
 describe('blocking proxy', function() {
   let driver: webdriver.WebDriver;
 
-  beforeAll(() => { ({driver} = getTestEnv()); });
+  beforeAll(() => {
+    ({driver} = getTestEnv());
+  });
 
   it('should fail when angular is not available', function(done) {
     driver.manage().timeouts().setScriptTimeout(20000);

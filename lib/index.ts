@@ -1,2 +1,2 @@
-export {BPClient} from './client';
 export {BlockingProxy} from './blockingproxy';
+export {BPClient} from './client';

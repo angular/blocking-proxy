@@ -1,3 +1,5 @@
+# Blocking Proxy [![Build Status](https://circleci.com/gh/angular/blocking-proxy.svg?style=shield)](https://circleci.com/gh/angular/blocking-proxy)
+
 # TODO
 
  - API commands

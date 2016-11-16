@@ -3,6 +3,7 @@
 
 # TypeScript output
 built/
+testapp/typings/
 
 # Logs
 logs
