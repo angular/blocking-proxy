@@ -18,7 +18,7 @@ export class BPClient {
 
       let request = http.request(options, (response) => {
         response.on('data', () => {});
-        response.on('error', (err) => {reject(err)});
+        response.on('error', (err) => reject(err));
         response.on('end', () => {
           resolve();
         });

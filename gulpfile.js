@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var spawn = require('child_process').spawn;
+var tslint = require('gulp-tslint');
 
 var runSpawn = function(done, task, opt_arg) {
   var child = spawn(task, opt_arg, {stdio: 'inherit'});
@@ -20,10 +21,8 @@ gulp.task('webdriver:update', function(done) {
   runSpawn(done, 'webdriver-manager', ['update']);
 });
 
-gulp.task('jshint', function(done) {
-  runSpawn(done, 'node', ['node_modules/jshint/bin/jshint', 'lib', 'spec', 'scripts',
-    '--exclude=lib/selenium-webdriver/**/*.js,spec/dependencyTest/*.js,' +
-    'spec/install/**/*.js']);
+gulp.task('tslint', function() {
+  return gulp.src(['lib/**/*.ts', 'spec/**/*.ts']).pipe(tslint()).pipe(tslint.report());
 });
 
 gulp.task('format:enforce', () => {
@@ -45,7 +44,7 @@ gulp.task('tsc', function(done) {
 });
 
 gulp.task('lint', function(done) {
-  runSequence('jshint', 'format:enforce', done);
+  runSequence('tslint', 'format:enforce', done);
 });
 
 gulp.task('prepublish', function(done) {
@@ -54,7 +53,7 @@ gulp.task('prepublish', function(done) {
 
 gulp.task('pretest', function(done) {
   runSequence(
-    ['webdriver:update', 'jshint', 'clang'], 'tsc', 'built:copy', done);
+    ['webdriver:update', 'tslint', 'clang'], 'tsc', 'built:copy', done);
 });
 
 gulp.task('default', ['prepublish']);

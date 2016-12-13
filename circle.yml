@@ -1,12 +1,16 @@
 dependencies:
+  override:
+    - npm update
+  cache_directories:
+    - testapp/node_modules
   post:
     - npm run webdriver:
           background: true
-    - npm run install_testapp
+    - cd testapp && npm update
     - npm run testapp:
           background: true
 test:
   override:
-    - gulp lint
+    - ./node_modules/.bin/gulp lint
     - npm test
     - npm run test:e2e

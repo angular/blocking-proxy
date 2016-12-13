@@ -79,7 +79,7 @@ describe('ng1 synchronizing with slow pages', function() {
 
     driver.getPageSource()
         .then((source) => {
-          expect(source).toMatch('polling mechanism')
+          expect(source).toMatch('polling mechanism');
           done();
         })
         .thenCatch(done.fail);

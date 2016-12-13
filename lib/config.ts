@@ -3,10 +3,10 @@
 import * as minimist from 'minimist';
 
 export interface Config {
-  help?: boolean
-  seleniumAddress?: string
-  port?: number
-  rootElement?: string
+  help?: boolean;
+  seleniumAddress?: string;
+  port?: number;
+  rootElement?: string;
 }
 
 const opts: minimist.Opts = {
@@ -37,5 +37,5 @@ Options:
     --port, -p              The port to listen on
     --selenumAddress, -s    The address of the selenium remote server to proxy
     --rootElement           Element housing ng-app, if not html or body
-`)
+`);
 }
