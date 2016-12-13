@@ -2,6 +2,8 @@ docs/
 lib/
 scripts/
 spec/
+testapp/
+built/spec/
 
 .gitattributes
 .github/

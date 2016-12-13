@@ -16,4 +16,7 @@ if (argv.help) {
 }
 
 const proxy = new BlockingProxy(argv.seleniumAddress, argv.rootElement);
-proxy.listen(argv.port);
+let port = proxy.listen(argv.port);
+if (argv.fork) {
+  process.send({ready: true, port: port});
+}

@@ -4,13 +4,14 @@ import * as minimist from 'minimist';
 
 export interface Config {
   help?: boolean;
+  fork?: boolean;
   seleniumAddress?: string;
   port?: number;
   rootElement?: string;
 }
 
 const opts: minimist.Opts = {
-  boolean: ['help'],
+  boolean: ['help', 'fork'],
   string: ['port', 'seleniumAddress'],
   alias: {
     help: ['h'],
@@ -18,7 +19,7 @@ const opts: minimist.Opts = {
     seleniumAddress: ['s'],
   },
   default: {
-    port: process.env.BP_PORT || 8111,
+    port: process.env.BP_PORT || 0,
     seleniumAddress: process.env.BP_SELENIUM_ADDRESS || 'http://localhost:4444/wd/hub',
     rootElement: 'body'
   }
@@ -33,9 +34,11 @@ export function printHelp() {
 Usage: blocking-proxy <options>
 
 Options:
-    --help, -h              Show help
-    --port, -p              The port to listen on
-    --selenumAddress, -s    The address of the selenium remote server to proxy
-    --rootElement           Element housing ng-app, if not html or body
+    --help, -h              Show help.
+    --port, -p              The port to listen on. If unset, will choose a random free port.
+    --fork                  Start in fork mode. BlockingProxy will use process.send() to communicate
+                                with the parent process.
+    --selenumAddress, -s    The address of the selenium remote server to proxy.
+    --rootElement           Element housing ng-app, if not html or body.
 `);
 }

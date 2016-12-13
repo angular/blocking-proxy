@@ -178,9 +178,7 @@ export class BlockingProxy {
                 console.log(
                     'Error while waiting for page to stabilize: ', value['localizedMessage']);
                 reject(value);
-                return;
               }
-              console.log('Stabilized');
               resolve();
             });
           });
@@ -207,8 +205,6 @@ export class BlockingProxy {
     }
 
     // If the command is not a proxy command, it's a regular webdriver command.
-    console.log('Req: ' + originalRequest.url);
-
     if (self.shouldStabilize(originalRequest.url)) {
       stabilized = self.sendRequestToStabilize(originalRequest);
     }
@@ -230,8 +226,10 @@ export class BlockingProxy {
   }
 
   listen(port: number) {
-    console.log('Blocking proxy listening on port ' + port);
     this.server.listen(port);
+    let actualPort = this.server.address().port;
+    console.log('Blocking proxy listening on port ' + actualPort);
+    return actualPort;
   }
 
   quit() {

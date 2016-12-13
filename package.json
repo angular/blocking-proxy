@@ -1,7 +1,7 @@
 {
-  "name": "blockingproxy",
+  "name": "blocking-proxy",
   "description": "WebDriver Proxy for testing rich clients. It block certain calls until Angular is done updating the page under test.",
-  "homepage": "https://github.com/angular/",
+  "homepage": "https://github.com/angular/blocking-proxy",
   "keywords": [
     "test",
     "testing",
