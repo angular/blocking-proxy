@@ -1,0 +1,30 @@
+<h3>Different things we can interact with</h3>
+
+<div id="title">
+  Example text
+</div>
+
+<div>
+  <h4>Buttons</h4>
+  <label>Flux Capacitor</label>
+  <button id="flux" ng-click="toggleFlux()">Status: {{fluxCapacitor}}</button>
+</div>
+
+<div>
+  <h4>Input boxes</h4>
+  <label>Username</label>
+  <input id="username" ng-model="username" type="text"/>
+  <label>Nickname</label>
+  <input id="nickname" ng-model="nickname" type="text"/>
+</div>
+
+<div>
+  <h4>Drag and drop</h4>
+  <input id="points" type="range" ng-model="points" min="1" max="10" value="1"/>
+  <div>{{points}}</div>
+</div>
+
+<div>
+  <h4>Alert trigger</h4>
+  <button id="alertbutton" ng-click="doAlert()">Open Alert</button>
+</div>

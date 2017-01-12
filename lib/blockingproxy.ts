@@ -1,6 +1,8 @@
-import {Promise} from 'es6-promise';
 import * as http from 'http';
 import * as url from 'url';
+
+import {parseWebDriverCommand} from './webdriverCommands';
+import {WebDriverLogger} from './webdriverLogger';
 
 let angularWaits = require('./angular/wait.js');
 
@@ -17,6 +19,7 @@ export class BlockingProxy {
   ng12hybrid = false;
   stabilityEnabled: boolean;
   server: http.Server;
+  logger: WebDriverLogger;
 
   constructor(seleniumAddress, rootElement?) {
     this.seleniumAddress = seleniumAddress;
@@ -47,6 +50,25 @@ export class BlockingProxy {
   static executeAsyncUrl(originalUrl: string) {
     let parts = originalUrl.split('/');
     return [parts[0], parts[1], parts[2], 'execute_async'].join('/');
+  }
+
+  /**
+   * Turn on WebDriver logging.
+   *
+   * @param logDir The directory to create logs in.
+   */
+  enableLogging(logDir: string) {
+    if (!this.logger) {
+      this.logger = new WebDriverLogger();
+    }
+    this.logger.setLogDir(logDir);
+  }
+
+  /**
+   * Override the logger instance. Only used for testing.
+   */
+  setLogger(logger: WebDriverLogger) {
+    this.logger = logger;
   }
 
   /**
@@ -152,7 +174,6 @@ export class BlockingProxy {
 
   sendRequestToStabilize(originalRequest) {
     let self = this;
-    console.log('Waiting for stability...', originalRequest.url);
     let deferred = new Promise((resolve, reject) => {
       let stabilityRequest = self.createSeleniumRequest(
           'POST', BlockingProxy.executeAsyncUrl(originalRequest.url), function(stabilityResponse) {
@@ -175,8 +196,7 @@ export class BlockingProxy {
                 // in the browser.
                 // TODO(heathkit): Extract more useful information from
                 // webdriver errors.
-                console.log(
-                    'Error while waiting for page to stabilize: ', value['localizedMessage']);
+                console.log('Error while waiting for page to stabilize: ' + value);
                 reject(value);
               }
               resolve();
@@ -207,6 +227,8 @@ export class BlockingProxy {
     // If the command is not a proxy command, it's a regular webdriver command.
     if (self.shouldStabilize(originalRequest.url)) {
       stabilized = self.sendRequestToStabilize(originalRequest);
+
+      // TODO: Log waiting for Angular.
     }
 
     stabilized.then(
@@ -215,8 +237,30 @@ export class BlockingProxy {
               originalRequest.method, originalRequest.url, function(seleniumResponse) {
                 response.writeHead(seleniumResponse.statusCode, seleniumResponse.headers);
                 seleniumResponse.pipe(response);
+                seleniumResponse.on('error', (err) => {
+                  response.writeHead(500);
+                  response.write(err);
+                  response.end();
+                });
               });
-          originalRequest.pipe(seleniumRequest);
+          let reqData = '';
+          originalRequest.on('error', (err) => {
+            response.writeHead(500);
+            response.write(err);
+            response.end();
+          });
+          originalRequest.on('data', (d) => {
+            reqData += d;
+            seleniumRequest.write(d);
+          });
+          originalRequest.on('end', () => {
+            let command =
+                parseWebDriverCommand(originalRequest.url, originalRequest.method, reqData);
+            if (this.logger) {
+              this.logger.logWebDriverCommand(command);
+            }
+            seleniumRequest.end();
+          });
         },
         (err) => {
           response.writeHead(500);
@@ -228,7 +272,6 @@ export class BlockingProxy {
   listen(port: number) {
     this.server.listen(port);
     let actualPort = this.server.address().port;
-    console.log('Blocking proxy listening on port ' + actualPort);
     return actualPort;
   }
 

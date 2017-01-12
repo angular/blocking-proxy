@@ -1,3 +1,4 @@
+import * as webdriver from 'selenium-webdriver';
 import {getTestEnv} from './environment';
 
 describe('blocking proxy', function() {

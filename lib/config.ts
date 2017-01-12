@@ -6,13 +6,14 @@ export interface Config {
   help?: boolean;
   fork?: boolean;
   seleniumAddress?: string;
+  logDir?: string;
   port?: number;
   rootElement?: string;
 }
 
 const opts: minimist.Opts = {
   boolean: ['help', 'fork'],
-  string: ['port', 'seleniumAddress'],
+  string: ['port', 'seleniumAddress', 'logDir'],
   alias: {
     help: ['h'],
     port: ['p'],
@@ -39,6 +40,7 @@ Options:
     --fork                  Start in fork mode. BlockingProxy will use process.send() to communicate
                                 with the parent process.
     --selenumAddress, -s    The address of the selenium remote server to proxy.
+    --logDir                If specified, will create a log of WebDriver commands in this directory.
     --rootElement           Element housing ng-app, if not html or body.
 `);
 }

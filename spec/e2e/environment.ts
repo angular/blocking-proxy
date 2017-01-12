@@ -2,9 +2,9 @@ import * as webdriver from 'selenium-webdriver';
 
 import {BlockingProxy, BPClient} from '../../lib';
 
-const BP_PORT = 8111;
-const BP_URL = `http://localhost:${BP_PORT}`;
-const WD_URL = 'http://localhost:4444/wd/hub';
+export const BP_PORT = 8111;
+export const BP_URL = `http://localhost:${BP_PORT}`;
+export const WD_URL = 'http://localhost:4444/wd/hub';
 
 let driver: webdriver.WebDriver;
 let bp: BlockingProxy;
