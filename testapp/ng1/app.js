@@ -5,6 +5,7 @@
 angular.module('myApp', ['ngRoute', 'myApp.appVersion']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/async', {templateUrl: 'async/async.html', controller: AsyncCtrl});
+    $routeProvider.when('/polling', {templateUrl: 'polling/polling.html', controller: PollingCtrl});
     $routeProvider.when('/interaction',
         {templateUrl: 'interaction/interaction.html', controller: InteractionCtrl});
     $routeProvider.when('/slowloader', {

@@ -5,6 +5,7 @@ import {parseWebDriverCommand} from './webdriverCommands';
 import {WebDriverLogger} from './webdriverLogger';
 
 let angularWaits = require('./angular/wait.js');
+export const BP_PREFIX = 'bpproxy';
 
 /**
  * The stability proxy is an http server responsible for intercepting
@@ -15,23 +16,22 @@ export class BlockingProxy {
   seleniumAddress: string;
 
   // The ng-app root to use when waiting on the client.
-  rootElement = '';
-  ng12hybrid = false;
-  stabilityEnabled: boolean;
+  rootSelector = '';
+  waitEnabled: boolean;
   server: http.Server;
   logger: WebDriverLogger;
 
-  constructor(seleniumAddress, rootElement?) {
+  constructor(seleniumAddress) {
     this.seleniumAddress = seleniumAddress;
-    this.rootElement = rootElement || 'body';
-    this.stabilityEnabled = true;
+    this.rootSelector = '';
+    this.waitEnabled = true;
     this.server = http.createServer(this.requestListener.bind(this));
   }
 
   waitForAngularData() {
     return JSON.stringify({
       script: 'return (' + angularWaits.NG_WAIT_FN + ').apply(null, arguments);',
-      args: [this.rootElement, this.ng12hybrid]
+      args: [this.rootSelector]
     });
   }
 
@@ -39,7 +39,7 @@ export class BlockingProxy {
    * This command is for the proxy server, not to be forwarded to Selenium.
    */
   static isProxyCommand(commandPath: string) {
-    return (commandPath.split('/')[1] === 'stabilize_proxy');
+    return (commandPath.split('/')[1] === BP_PREFIX);
   }
 
   /**
@@ -72,12 +72,19 @@ export class BlockingProxy {
   }
 
   /**
+   * Change the parameters used by the wait function.
+   */
+  setWaitParams(rootEl) {
+    this.rootSelector = rootEl;
+  }
+
+  /**
    * Return true if the requested method should trigger a stabilize first.
    *
    * @param {string} commandPath Original request url.
    */
   shouldStabilize(commandPath) {
-    if (!this.stabilityEnabled) {
+    if (!this.waitEnabled) {
       return false;
     }
 
@@ -135,14 +142,29 @@ export class BlockingProxy {
   handleProxyCommand(message, data, response) {
     let command = message.url.split('/')[2];
     switch (command) {
-      case 'enabled':
+      case 'waitEnabled':
         if (message.method === 'GET') {
           response.writeHead(200);
-          response.write(JSON.stringify({value: this.stabilityEnabled}));
+          response.write(JSON.stringify({value: this.waitEnabled}));
           response.end();
         } else if (message.method === 'POST') {
           response.writeHead(200);
-          this.stabilityEnabled = JSON.parse(data).value;
+          this.waitEnabled = JSON.parse(data).value;
+          response.end();
+        } else {
+          response.writeHead(405);
+          response.write('Invalid method');
+          response.end();
+        }
+        break;
+      case 'waitParams':
+        if (message.method === 'GET') {
+          response.writeHead(200);
+          response.write(JSON.stringify({rootSelector: this.rootSelector}));
+          response.end();
+        } else if (message.method === 'POST') {
+          response.writeHead(200);
+          this.rootSelector = JSON.parse(data).rootSelector;
           response.end();
         } else {
           response.writeHead(405);

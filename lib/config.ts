@@ -8,7 +8,6 @@ export interface Config {
   seleniumAddress?: string;
   logDir?: string;
   port?: number;
-  rootElement?: string;
 }
 
 const opts: minimist.Opts = {
@@ -22,7 +21,6 @@ const opts: minimist.Opts = {
   default: {
     port: process.env.BP_PORT || 0,
     seleniumAddress: process.env.BP_SELENIUM_ADDRESS || 'http://localhost:4444/wd/hub',
-    rootElement: 'body'
   }
 };
 
