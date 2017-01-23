@@ -3,7 +3,7 @@ import * as webdriver from 'selenium-webdriver';
 import * as stream from 'stream';
 
 import {BlockingProxy} from '../../lib/blockingproxy';
-import {WebDriverLogger} from '../../lib/webdriverLogger';
+import {WebDriverLogger} from '../../lib/webdriver_logger';
 import {getMockSelenium, Session} from '../helpers/mock_selenium';
 
 const capabilities = webdriver.Capabilities.chrome();

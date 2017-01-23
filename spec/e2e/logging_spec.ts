@@ -12,9 +12,9 @@ import {BP_URL, getTestEnv} from './environment';
 Example log of a test session:
 
 [12:51:30] Getting new "chrome" session
-[12:51:33] [abcdef] Navigating to 'http://localhost/stuff'
-[12:51:35] [abcdef] Wait for Angular
-[12:51:36] [abcdef] Click on css '.test_element'
+[12:51:33] [abcdef] [0.5s] Navigating to 'http://localhost/stuff'
+[12:51:35] [abcdef] [0.3s] Wait for Angular
+[12:51:36] [abcdef] [0.01s] Click on css '.test_element'
 [12:51:36] [abcdef] Move mouse by (0,50)
 [12:51:37] [abcdef] Click on binding 'thinger'
  */

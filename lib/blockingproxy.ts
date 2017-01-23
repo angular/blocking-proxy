@@ -1,8 +1,9 @@
 import * as http from 'http';
 import * as url from 'url';
 
-import {parseWebDriverCommand} from './webdriverCommands';
-import {WebDriverLogger} from './webdriverLogger';
+import {WebDriverCommand} from './webdriver_commands';
+import {WebDriverLogger} from './webdriver_logger';
+import {WebDriverBarrier, WebDriverProxy} from './webdriver_proxy';
 
 let angularWaits = require('./angular/wait.js');
 export const BP_PREFIX = 'bpproxy';
@@ -12,7 +13,7 @@ export const BP_PREFIX = 'bpproxy';
  * JSON webdriver commands. It keeps track of whether the page under test
  * needs to wait for page stability, and initiates a wait if so.
  */
-export class BlockingProxy {
+export class BlockingProxy implements WebDriverBarrier {
   seleniumAddress: string;
 
   // The ng-app root to use when waiting on the client.
@@ -20,12 +21,15 @@ export class BlockingProxy {
   waitEnabled: boolean;
   server: http.Server;
   logger: WebDriverLogger;
+  private proxy: WebDriverProxy;
 
   constructor(seleniumAddress) {
     this.seleniumAddress = seleniumAddress;
     this.rootSelector = '';
     this.waitEnabled = true;
     this.server = http.createServer(this.requestListener.bind(this));
+    this.proxy = new WebDriverProxy(seleniumAddress);
+    this.proxy.addBarrier(this);
   }
 
   waitForAngularData() {
@@ -194,11 +198,10 @@ export class BlockingProxy {
     }
   }
 
-  sendRequestToStabilize(originalRequest) {
-    let self = this;
-    let deferred = new Promise((resolve, reject) => {
-      let stabilityRequest = self.createSeleniumRequest(
-          'POST', BlockingProxy.executeAsyncUrl(originalRequest.url), function(stabilityResponse) {
+  sendRequestToStabilize(url: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let stabilityRequest = this.createSeleniumRequest(
+          'POST', BlockingProxy.executeAsyncUrl(url), function(stabilityResponse) {
             // TODO - If the response is that angular is not available on the
             // page, should we just go ahead and continue?
             let stabilityData = '';
@@ -227,68 +230,35 @@ export class BlockingProxy {
       stabilityRequest.write(this.waitForAngularData());
       stabilityRequest.end();
     });
-
-    return deferred;
   }
 
   requestListener(originalRequest: http.IncomingMessage, response: http.ServerResponse) {
-    let self = this;
-    let stabilized = Promise.resolve(null);
-
     if (BlockingProxy.isProxyCommand(originalRequest.url)) {
       let commandData = '';
       originalRequest.on('data', (d) => {
         commandData += d;
       });
       originalRequest.on('end', () => {
-        self.handleProxyCommand(originalRequest, commandData, response);
+        this.handleProxyCommand(originalRequest, commandData, response);
       });
       return;
     }
 
-    // If the command is not a proxy command, it's a regular webdriver command.
-    if (self.shouldStabilize(originalRequest.url)) {
-      stabilized = self.sendRequestToStabilize(originalRequest);
+    // OK to ignore the promise returned by this.
+    this.proxy.handleRequest(originalRequest, response);
+  }
 
-      // TODO: Log waiting for Angular.
+  onCommand(command: WebDriverCommand): Promise<void> {
+    if (this.logger) {
+      command.on('data', () => {
+        this.logger.logWebDriverCommand(command);
+      });
     }
 
-    stabilized.then(
-        () => {
-          let seleniumRequest = self.createSeleniumRequest(
-              originalRequest.method, originalRequest.url, function(seleniumResponse) {
-                response.writeHead(seleniumResponse.statusCode, seleniumResponse.headers);
-                seleniumResponse.pipe(response);
-                seleniumResponse.on('error', (err) => {
-                  response.writeHead(500);
-                  response.write(err);
-                  response.end();
-                });
-              });
-          let reqData = '';
-          originalRequest.on('error', (err) => {
-            response.writeHead(500);
-            response.write(err);
-            response.end();
-          });
-          originalRequest.on('data', (d) => {
-            reqData += d;
-            seleniumRequest.write(d);
-          });
-          originalRequest.on('end', () => {
-            let command =
-                parseWebDriverCommand(originalRequest.url, originalRequest.method, reqData);
-            if (this.logger) {
-              this.logger.logWebDriverCommand(command);
-            }
-            seleniumRequest.end();
-          });
-        },
-        (err) => {
-          response.writeHead(500);
-          response.write(err);
-          response.end();
-        });
+    if (this.shouldStabilize(command.url)) {
+      return this.sendRequestToStabilize(command.url);
+    }
+    return Promise.resolve(null);
   }
 
   listen(port: number) {
