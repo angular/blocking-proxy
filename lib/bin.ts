@@ -22,4 +22,8 @@ if (argv.logDir) {
 let port = proxy.listen(argv.port);
 if (argv.fork) {
   process.send({ready: true, port: port});
+  process.on('disconnect', function() {
+    console.log('parent exited, quitting');
+    process.exit();
+  });
 }
