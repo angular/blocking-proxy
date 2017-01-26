@@ -32,7 +32,7 @@ describe('disabling waiting as needed', function() {
 
     expect(await count.getText()).toBeGreaterThan(-1);
 
-    await driver.sleep(2000);
+    await driver.sleep(2100);
 
     expect(await count.getText()).toBeGreaterThan(1);
   });

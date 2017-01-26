@@ -13,6 +13,7 @@ describe('WebDriver command parser', () => {
   let proxy: WebDriverProxy;
   let server: http.Server;
   let testBarrier: TestBarrier;
+  let port: number;
 
   beforeEach(async() => {
     mockServer = getMockSelenium();
@@ -24,7 +25,7 @@ describe('WebDriver command parser', () => {
     proxy.addBarrier(testBarrier);
     server = http.createServer(proxy.handleRequest.bind(proxy));
     server.listen(0);
-    let port = server.address().port;
+    port = server.address().port;
 
     driver = new webdriver.Builder()
                  .usingServer(`http://localhost:${port}`)
@@ -40,7 +41,7 @@ describe('WebDriver command parser', () => {
     let sessionId = session.getId();
     await driver.quit();
 
-    let recentCommands = testBarrier.getCommandNames();
+    let recentCommands = testBarrier.getCommands();
     expect(recentCommands.length).toBe(3);
     expect(recentCommands).toEqual([
       CommandName.NewSession, CommandName.Go, CommandName.DeleteSession
@@ -50,12 +51,104 @@ describe('WebDriver command parser', () => {
 
   it('parses url commands', async() => {
     await driver.getCurrentUrl();
+    await driver.navigate().back();
+    await driver.navigate().forward();
+    await driver.navigate().refresh();
+    await driver.getTitle();
 
-    let recentCommands = testBarrier.getCommandNames();
-    expect(recentCommands.length).toBe(3);
+    let recentCommands = testBarrier.getCommands();
+    expect(recentCommands.length).toBe(7);
     expect(recentCommands).toEqual([
-      CommandName.NewSession, CommandName.Go, CommandName.GetCurrentURL
+      CommandName.NewSession, CommandName.Go, CommandName.GetCurrentURL, CommandName.Back,
+      CommandName.Forward, CommandName.Refresh, CommandName.GetTitle
     ]);
+  });
+
+  it('parses timeout commands', async() => {
+    await driver.manage().timeouts().setScriptTimeout(2468);
+
+    let recentCommands = testBarrier.getCommands();
+    expect(recentCommands[2]).toEqual(CommandName.SetTimeouts);
+    let timeoutData = testBarrier.commands[2].data;
+    expect(timeoutData['ms']).toEqual(2468);
+  });
+
+  it('parses element commands', async() => {
+    let el = driver.findElement(webdriver.By.css('.test'));
+    await el.click();
+    await el.getCssValue('fake-color');
+    await el.getAttribute('fake-attr');
+    await el.getTagName();
+    await el.getText();
+    await el.getSize();
+    await el.clear();
+    await el.sendKeys('test string');
+
+    let inner = el.findElement(webdriver.By.css('.inner_thing'));
+    await inner.click();
+
+    await driver.findElements(webdriver.By.id('thing'));
+    await el.findElements(webdriver.By.css('.inner_thing'));
+
+    // let find = testBarrier.commands[2];
+    expect(testBarrier.getCommands()).toEqual([
+      CommandName.NewSession,
+      CommandName.Go,
+      CommandName.FindElement,
+      CommandName.ElementClick,
+      CommandName.GetElementCSSValue,
+      CommandName.GetElementAttribute,
+      CommandName.GetElementTagName,
+      CommandName.GetElementText,
+      CommandName.GetElementRect,
+      CommandName.ElementClear,
+      CommandName.ElementSendKeys,
+      CommandName.FindElementFromElement,
+      CommandName.ElementClick,
+      CommandName.FindElements,
+      CommandName.FindElementsFromElement,
+    ]);
+  });
+
+  it('parses actions', async() => {
+    let el = driver.findElement(webdriver.By.css('.test'));
+
+    await driver.actions().mouseMove({x: 10, y: 10}).dragAndDrop(el, {x: 20, y: 20}).perform();
+
+    expect(testBarrier.getCommands()).toEqual([
+      CommandName.NewSession, CommandName.Go, CommandName.FindElement, CommandName.WireMoveTo,
+      CommandName.WireMoveTo, CommandName.WireButtonDown, CommandName.WireMoveTo,
+      CommandName.WireButtonUp
+    ]);
+    expect(testBarrier.commands[3].data).toEqual({xoffset: 10, yoffset: 10});
+  });
+
+  it('parses alert commands', async() => {
+    await driver.switchTo().alert().dismiss();
+    await driver.switchTo().alert().accept();
+
+    expect(testBarrier.getCommands()).toEqual([
+      CommandName.NewSession, CommandName.Go, CommandName.GetAlertText, CommandName.DismissAlert,
+      CommandName.GetAlertText, CommandName.AcceptAlert
+    ]);
+  });
+
+  it('saves url and method for unknown commands', (done) => {
+    const fakeUrl = '/session/abcdef/unknown';
+    let options:
+        http.RequestOptions = {port: port, path: fakeUrl, hostname: 'localhost', method: 'GET'};
+
+    let req = http.request(options);
+    req.end();
+
+    req.on('response', () => {
+      let lastCommand = testBarrier.commands[2];
+      expect(lastCommand.commandName).toBe(CommandName.UNKNOWN);
+      expect(lastCommand.url).toEqual(fakeUrl);
+      expect(lastCommand.method).toEqual('GET');
+      done();
+    });
+    req.on('error', done.fail);
   });
 
   afterEach(() => {

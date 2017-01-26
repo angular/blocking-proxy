@@ -1,7 +1,7 @@
 import * as webdriver from 'selenium-webdriver';
 import {getTestEnv} from './environment';
 
-describe('ng1 synchronizing with slow pages', function() {
+describe('ng1 synchronizing with slow pages', () => {
   let driver: webdriver.WebDriver;
 
   beforeAll(() => {
@@ -12,84 +12,78 @@ describe('ng1 synchronizing with slow pages', function() {
     driver.get('http://localhost:8081/ng1/#/async').then(done);
   });
 
-  function expectText(selector, expectedText) {
-    return driver.findElement(webdriver.By.css(selector)).getText().then((text) => {
-      expect(text).toEqual(expectedText);
-    });
+  async function expectText(selector, expectedText) {
+    let text = await driver.findElement(webdriver.By.css(selector)).getText();
+    expect(text).toEqual(expectedText);
   }
 
-  function clickElement(selector) {
-    return driver.findElement(webdriver.By.css(selector)).click();
+  async function clickElement(selector) {
+    let el = await driver.findElement(webdriver.By.css(selector));
+    await el.click();
   }
 
-  it('waits for http calls', (done) => {
-    expectText('[ng-bind="slowHttpStatus"]', 'not started');
+  it('waits for http calls', async() => {
+    await expectText('[ng-bind="slowHttpStatus"]', 'not started');
 
-    clickElement('[ng-click="slowHttp()"]');
+    await clickElement('[ng-click="slowHttp()"]');
 
-    expectText('[ng-bind="slowHttpStatus"]', 'done').then(done).thenCatch(done.fail);
+    await expectText('[ng-bind="slowHttpStatus"]', 'done');
   }, 10000);
 
-  it('waits for long javascript execution', (done) => {
-    expectText('[ng-bind="slowFunctionStatus"]', 'not started');
+  it('waits for long javascript execution', async() => {
+    await expectText('[ng-bind="slowFunctionStatus"]', 'not started');
 
-    clickElement('[ng-click="slowFunction()"]');
+    await clickElement('[ng-click="slowFunction()"]');
 
-    expectText('[ng-bind="slowFunctionStatus"]', 'done').then(done).thenCatch(done.fail);
+    await expectText('[ng-bind="slowFunctionStatus"]', 'done');
   }, 10000);
 
-  it('DOES NOT wait for timeout', (done) => {
-    expectText('[ng-bind="slowTimeoutStatus"]', 'not started');
+  it('DOES NOT wait for timeout', async() => {
+    await expectText('[ng-bind="slowTimeoutStatus"]', 'not started');
 
-    clickElement('[ng-click="slowTimeout()"]');
+    await clickElement('[ng-click="slowTimeout()"]');
 
-    expectText('[ng-bind="slowTimeoutStatus"]', 'pending...').then(done).thenCatch(done.fail);
+    await expectText('[ng-bind="slowTimeoutStatus"]', 'pending...');
   }, 10000);
 
-  it('waits for $timeout', (done) => {
-    expectText('[ng-bind="slowAngularTimeoutStatus"]', 'not started');
+  it('waits for $timeout', async() => {
+    await expectText('[ng-bind="slowAngularTimeoutStatus"]', 'not started');
 
-    clickElement('[ng-click="slowAngularTimeout()"]');
+    await clickElement('[ng-click="slowAngularTimeout()"]');
 
-    expectText('[ng-bind="slowAngularTimeoutStatus"]', 'done').then(done).thenCatch(done.fail);
+    await expectText('[ng-bind="slowAngularTimeoutStatus"]', 'done');
   }, 10000);
 
-  it('waits for $timeout then a promise', (done) => {
-    expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'not started');
+  it('waits for $timeout then a promise', async() => {
+    await expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'not started');
 
-    clickElement('[ng-click="slowAngularTimeoutPromise()"]');
+    await clickElement('[ng-click="slowAngularTimeoutPromise()"]');
 
-    expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'done')
-        .then(done)
-        .thenCatch(done.fail);
+    await expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'done');
   }, 10000);
 
-  it('waits for long http call then a promise', (done) => {
-    expectText('[ng-bind="slowHttpPromiseStatus"]', 'not started');
+  it('waits for long http call then a promise', async() => {
+    await expectText('[ng-bind="slowHttpPromiseStatus"]', 'not started');
 
-    clickElement('[ng-click="slowHttpPromise()"]');
+    await clickElement('[ng-click="slowHttpPromise()"]');
 
-    expectText('[ng-bind="slowHttpPromiseStatus"]', 'done').then(done).thenCatch(done.fail);
+    await expectText('[ng-bind="slowHttpPromiseStatus"]', 'done');
   }, 10000);
 
-  it('waits for slow routing changes', (done) => {
-    expectText('[ng-bind="routingChangeStatus"]', 'not started');
+  it('waits for slow routing changes', async() => {
+    await expectText('[ng-bind="routingChangeStatus"]', 'not started');
 
-    clickElement('[ng-click="routingChange()"]');
+    await clickElement('[ng-click="routingChange()"]');
 
-    driver.getPageSource()
-        .then((source) => {
-          expect(source).toMatch('polling mechanism');
-          done();
-        })
-        .thenCatch(done.fail);
+    let source = await driver.getPageSource();
+    expect(source).toMatch('polling mechanism');
   }, 10000);
 
-  it('waits for slow ng-include templates to load', (done) => {
-    expectText('.included', 'fast template contents');
+  it('waits for slow ng-include templates to load', async() => {
+    await expectText('.included', 'fast template contents');
 
-    clickElement('[ng-click="changeTemplateUrl()"]');
+    await clickElement('[ng-click="changeTemplateUrl()"]');
 
-    expectText('.included', 'slow template contents').then(done).thenCatch(done.fail);
+    await expectText('.included', 'slow template contents');
   }, 10000);
 });

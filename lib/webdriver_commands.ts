@@ -14,6 +14,31 @@ export enum CommandName {
   SetTimeouts,
   Go,
   GetCurrentURL,
+  Back,
+  Forward,
+  Refresh,
+  GetTitle,
+  FindElement,
+  FindElements,
+  FindElementFromElement,
+  FindElementsFromElement,
+  IsElementSelected,
+  GetElementAttribute,
+  GetElementProperty,
+  GetElementCSSValue,
+  GetElementText,
+  GetElementTagName,
+  GetElementRect,
+  IsElementEnabled,
+  ElementClick,
+  ElementClear,
+  ElementSendKeys,
+  WireMoveTo,
+  WireButtonDown,
+  WireButtonUp,
+  GetAlertText,
+  AcceptAlert,
+  DismissAlert,
   UNKNOWN
 }
 
@@ -91,7 +116,7 @@ export class WebDriverCommand extends events.EventEmitter {
   private params: {[key: string]: string};
   data: any;
   responseStatus: number;
-  responseData: number;
+  responseData: any;
 
   // All WebDriver commands have a session Id, except for two.
   // NewSession will have a session Id in the data
@@ -100,7 +125,9 @@ export class WebDriverCommand extends events.EventEmitter {
     return this.getParam('sessionId');
   }
 
-  constructor(public commandName: CommandName, public url: string, params?) {
+  constructor(
+      public commandName: CommandName, public readonly url: string,
+      public readonly method: HttpMethod, params?) {
     super();
     this.params = params;
   }
@@ -110,16 +137,20 @@ export class WebDriverCommand extends events.EventEmitter {
   }
 
   public handleData(data?: any) {
-    if (data) {
+    try {
       this.data = JSON.parse(data);
+    } catch (err) {
+      this.data = data;
     }
     this.emit('data');
   }
 
   public handleResponse(statusCode: number, data?: any) {
     this.responseStatus = statusCode;
-    if (data) {
+    try {
       this.responseData = JSON.parse(data);
+    } catch (err) {
+      this.responseData = data;
     }
     this.emit('response');
   }
@@ -142,11 +173,11 @@ export function parseWebDriverCommand(url, method) {
   for (let endpoint of endpoints) {
     if (endpoint.matches(url, method)) {
       let params = endpoint.getParams(url);
-      return new WebDriverCommand(endpoint.name, url, params);
+      return new WebDriverCommand(endpoint.name, url, method, params);
     }
   }
 
-  return new WebDriverCommand(CommandName.UNKNOWN, url, {});
+  return new WebDriverCommand(CommandName.UNKNOWN, url, method, {});
 }
 
 let sessionPrefix = '/session/:sessionId';
@@ -157,3 +188,48 @@ addWebDriverCommand(CommandName.GetTimeouts, 'GET', sessionPrefix + '/timeouts')
 addWebDriverCommand(CommandName.SetTimeouts, 'POST', sessionPrefix + '/timeouts');
 addWebDriverCommand(CommandName.Go, 'POST', sessionPrefix + '/url');
 addWebDriverCommand(CommandName.GetCurrentURL, 'GET', sessionPrefix + '/url');
+addWebDriverCommand(CommandName.Back, 'POST', sessionPrefix + '/back');
+addWebDriverCommand(CommandName.Forward, 'POST', sessionPrefix + '/forward');
+addWebDriverCommand(CommandName.Refresh, 'POST', sessionPrefix + '/refresh');
+addWebDriverCommand(CommandName.GetTitle, 'GET', sessionPrefix + '/title');
+addWebDriverCommand(CommandName.FindElement, 'POST', sessionPrefix + '/element');
+addWebDriverCommand(CommandName.FindElements, 'POST', sessionPrefix + '/elements');
+addWebDriverCommand(
+    CommandName.FindElementFromElement, 'POST', sessionPrefix + '/element/:elementId/element');
+addWebDriverCommand(
+    CommandName.FindElementsFromElement, 'POST', sessionPrefix + '/element/:elementId/elements');
+addWebDriverCommand(
+    CommandName.IsElementSelected, 'POST', sessionPrefix + '/element/:elementId/selected');
+addWebDriverCommand(
+    CommandName.GetElementAttribute, 'GET',
+    sessionPrefix + '/element/:elementId/attribute/:attributeName');
+addWebDriverCommand(
+    CommandName.GetElementProperty, 'GET',
+    sessionPrefix + '/element/:elementId/property/:propertyName');
+addWebDriverCommand(
+    CommandName.GetElementCSSValue, 'GET',
+    sessionPrefix + '/element/:elementId/css/:cssPropertyName');
+addWebDriverCommand(CommandName.GetElementText, 'GET', sessionPrefix + '/element/:elementId/text');
+addWebDriverCommand(
+    CommandName.GetElementTagName, 'GET', sessionPrefix + '/element/:elementId/name');
+addWebDriverCommand(CommandName.GetElementRect, 'GET', sessionPrefix + '/element/:elementId/rect');
+addWebDriverCommand(CommandName.GetElementRect, 'GET', sessionPrefix + '/element/:elementId/size');
+addWebDriverCommand(
+    CommandName.IsElementEnabled, 'GET', sessionPrefix + '/element/:elementId/enabled');
+addWebDriverCommand(CommandName.ElementClick, 'POST', sessionPrefix + '/element/:elementId/click');
+addWebDriverCommand(CommandName.ElementClear, 'POST', sessionPrefix + '/element/:elementId/clear');
+addWebDriverCommand(
+    CommandName.ElementSendKeys, 'POST', sessionPrefix + '/element/:elementId/value');
+
+addWebDriverCommand(CommandName.GetAlertText, 'GET', sessionPrefix + '/alert_text');
+addWebDriverCommand(CommandName.GetAlertText, 'GET', sessionPrefix + '/alert/text');
+addWebDriverCommand(CommandName.AcceptAlert, 'POST', sessionPrefix + '/alert/accept');
+addWebDriverCommand(CommandName.AcceptAlert, 'POST', sessionPrefix + '/accept_alert');
+addWebDriverCommand(CommandName.DismissAlert, 'POST', sessionPrefix + '/alert/dismiss');
+addWebDriverCommand(CommandName.DismissAlert, 'POST', sessionPrefix + '/dismiss_alert');
+
+// These commands are part of the JSON protocol, and were replaced by Perform Actions in the W3C
+// spec
+addWebDriverCommand(CommandName.WireMoveTo, 'POST', sessionPrefix + '/moveto');
+addWebDriverCommand(CommandName.WireButtonDown, 'POST', sessionPrefix + '/buttondown');
+addWebDriverCommand(CommandName.WireButtonUp, 'POST', sessionPrefix + '/buttonup');

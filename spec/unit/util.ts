@@ -14,8 +14,12 @@ export class TestBarrier implements WebDriverBarrier {
     return;
   }
 
-  getCommandNames(): CommandName[] {
+  getCommands(): CommandName[] {
     return this.commands.map((c) => c.commandName);
+  }
+
+  getCommandNames(): string[] {
+    return this.commands.map((c) => CommandName[c.commandName]);
   }
 }
 
