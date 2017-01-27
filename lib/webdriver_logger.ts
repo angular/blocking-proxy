@@ -9,6 +9,27 @@ function getLogId() {
   return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(36).slice(0, 8);
 }
 
+// Super proprietary left pad implementation. Do not copy plzkthx.
+function leftPad(field: string): string {
+  const fieldWidth = 6;
+  let padding = fieldWidth - field.length;
+  if (padding > 0) {
+    return ' '.repeat(padding) + field;
+  }
+  return field;
+}
+
+
+const FINDERS = [
+  CommandName.FindElement, CommandName.FindElementFromElement, CommandName.FindElements,
+  CommandName.FindElementsFromElement
+];
+const READERS = [
+  CommandName.GetElementTagName, CommandName.GetElementText, CommandName.GetElementAttribute,
+  CommandName.GetElementProperty, CommandName.GetElementCSSValue, CommandName.GetElementRect
+];
+const PAD = '    ';
+
 /**
  * Logs WebDriver commands, transforming the command into a user-friendly description.
  */
@@ -39,33 +60,82 @@ export class WebDriverLogger {
     if (!this.logStream) {
       return;
     }
-    let cmdLog = this.printCommand(command);
 
     let logLine: string;
-    if (command.getParam('sessionId')) {
-      let session = command.getParam('sessionId').slice(0, 6);
-      logLine = `${this.timestamp()} [${session}] ${cmdLog}\n`;
-    } else {
-      logLine = `${this.timestamp()} ${cmdLog}\n`;
-    }
+    logLine = `${this.timestamp()} `;
 
-    this.logStream.write(logLine);
+    let started = Date.now();
+    command.on('response', () => {
+      let done = Date.now();
+      let elapsed = leftPad((done - started) + '');
+      logLine += `| ${elapsed}ms `;
+
+      if (command.getParam('sessionId')) {
+        let session = command.getParam('sessionId').slice(0, 6);
+        logLine += `| ${session} `;
+      } else if (command.commandName == CommandName.NewSession) {
+        // Only for new session commands, the sessionId is in the response.
+        let session = command.responseData['sessionId'].slice(0, 6);
+        logLine += `| ${session} `;
+      }
+
+      if (command.commandName == CommandName.UNKNOWN) {
+        logLine += `| ${command.url}`;
+      } else {
+        logLine += `| ${CommandName[command.commandName]}`;
+      }
+
+      if (command.commandName == CommandName.Go) {
+        logLine += ' ' + command.data['url'];
+      } else if (command.getParam('elementId')) {
+        logLine += ` (${command.getParam('elementId')})`;
+      }
+      logLine += '\n';
+
+      this.logStream.write(logLine);
+      this.renderData(command);
+      this.renderResponse(command);
+    });
   }
 
-  printCommand(command: WebDriverCommand) {
-    switch (command.commandName) {
-      case CommandName.NewSession:
-        let desired = command.data['desiredCapabilities'];
-        return `Getting new "${desired['browserName']}" session`;
-      case CommandName.DeleteSession:
-        let sessionId = command.getParam('sessionId').slice(0, 6);
-        return `Deleting session ${sessionId}`;
-      case CommandName.Go:
-        return `Navigating to ${command.data['url']}`;
-      case CommandName.GetCurrentURL:
-        return `Getting current URL`;
-      default:
-        return `Unknown command ${command.url}`;
+  private renderData(command: WebDriverCommand) {
+    let dataLine = '';
+    if (command.commandName === CommandName.NewSession) {
+      dataLine = JSON.stringify(command.data['desiredCapabilities']);
+
+    } else if (command.commandName === CommandName.ElementSendKeys) {
+      let value = command.data['value'].join('');
+      dataLine = `Send: ${value}`;
+
+    } else if (FINDERS.indexOf(command.commandName) !== -1) {
+      const using = command.data['using'];
+      const value = command.data['value'];
+      dataLine = `Using ${using} '${value}'`;
+    }
+    if (dataLine) {
+      this.logStream.write(PAD + dataLine + '\n');
+    }
+  }
+
+  private renderResponse(command: WebDriverCommand) {
+    let respLine = '';
+    if (command.responseStatus != 200) {
+      respLine = `ERROR: ${command.responseData['state']}`;
+    } else if (FINDERS.indexOf(command.commandName) !== -1) {
+      let els = command.responseData['value'];
+      if (!Array.isArray(els)) {
+        els = [els];
+      }
+      els = els.map((e) => e['ELEMENT']);
+      respLine = 'Elements: ' + els;
+    } else if (READERS.indexOf(command.commandName) !== -1) {
+      respLine = command.responseData['value'];
+      if (typeof respLine == 'object') {
+        respLine = JSON.stringify(respLine);
+      }
+    }
+    if (respLine) {
+      this.logStream.write(PAD + respLine + '\n');
     }
   }
 
@@ -76,6 +146,6 @@ export class WebDriverLogger {
     let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
     let millis = d.getMilliseconds().toString();
     millis = '000'.slice(0, 3 - millis.length) + millis;
-    return `[${hours}:${minutes}:${seconds}.${millis}]`;
+    return `${hours}:${minutes}:${seconds}.${millis}`;
   }
 }

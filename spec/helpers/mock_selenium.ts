@@ -39,7 +39,7 @@ let findElement = new Command<Session>('POST', 'element', (session, params) => {
 
 // Find Elements
 let findElements = new Command<Session>('POST', 'elements', (session, params) => {
-  return [{'ELEMENT': '0'}];
+  return [{'ELEMENT': '0'}, {'ELEMENT': '1'}];
 });
 
 // Find Element From Element
@@ -51,7 +51,7 @@ let findElementFromElement =
 // Find Elements From Element
 let findElementsFromElement =
     new Command<Session>('POST', 'element/:elementId/elements', (session, params) => {
-      return [{'ELEMENT': '0'}];
+      return [{'ELEMENT': '0'}, {'ELEMENT': '1'}];
     });
 
 // Is Element Selected
@@ -60,31 +60,44 @@ let isElementSelected =
 
 // Get Element Attribute
 let getElementAttribute = new Command<Session>(
-    'GET', 'element/:elementId/attribute/:attributeName', (session, params) => {});
+    'GET', 'element/:elementId/attribute/:attributeName', (session, params) => {
+      return 'null';
+    });
 
 // Get Element Property
-let getElementProperty = new Command<Session>(
-    'GET', 'element/:elementId/property/:propertyName', (session, params) => {});
+let getElementProperty =
+    new Command<Session>('GET', 'element/:elementId/property/:propertyName', (session, params) => {
+      return 'Property';
+    });
 
 // Get Element CSS Value
 let getElementCSSValue =
-    new Command<Session>('GET', 'element/:elementId/css/:cssPropertyName', (session, params) => {});
+    new Command<Session>('GET', 'element/:elementId/css/:cssPropertyName', (session, params) => {
+      return 'white';
+    });
 
 // Get Element Text
-let getElementText =
-    new Command<Session>('GET', 'element/:elementId/text', (session, params) => {});
+let getElementText = new Command<Session>('GET', 'element/:elementId/text', (session, params) => {
+  return 'some text';
+});
 
 // Get Element Tag Name
 let getElementTagName =
-    new Command<Session>('GET', 'element/:elementId/name', (session, params) => {});
+    new Command<Session>('GET', 'element/:elementId/name', (session, params) => {
+      return 'button';
+    });
 
 // Get Element Rect
-let getElementRect =
-    new Command<Session>('GET', 'element/:elementId/rect', (session, params) => {});
+let getElementRect = new Command<Session>('GET', 'element/:elementId/rect', (session, params) => {
+  return {width: 88, hCode: 88, class: 'org.openqa.selenium.Dimension', height: 20};
+});
 
 // Get Element Rect from JSON Wire protocol (not W3C spec)
 let getElementRectWire =
-    new Command<Session>('GET', 'element/:elementId/size', (session, params) => {});
+    new Command<Session>('GET', 'element/:elementId/size', (session, params) => {
+      return {width: 88, hCode: 88, class: 'org.openqa.selenium.Dimension', height: 20};
+    });
+
 
 // Is Element Enabled
 let isElementEnabled =
