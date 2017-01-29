@@ -1,8 +1,8 @@
 import {BlockingProxy} from '../../lib/blockingproxy';
 
 describe('BlockingProxy', () => {
-  it('should be able to be created', () => {
+  it('should wait for angular by default', () => {
     let proxy = new BlockingProxy(8111);
-    expect(proxy.waitEnabled).toBe(true);
+    expect(proxy.waitBarrier.enabled).toBe(true);
   });
 });

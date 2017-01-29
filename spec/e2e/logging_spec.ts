@@ -27,7 +27,7 @@ describe('Logger', () => {
   let logDir: string;
 
   function logPath() {
-    let logName = bp.logger.logName;
+    let logName = bp.waitBarrier.logger.logName;
     return path.join(logDir, logName);
   }
 

@@ -19,7 +19,7 @@ describe('disabling waiting as needed', function() {
   });
 
   it('avoids timeouts', async() => {
-    bp.waitEnabled = true;
+    bp.waitBarrier.enabled = true;
 
     let startButton = await driver.findElement(By.id('pollstarter'));
 
@@ -28,7 +28,7 @@ describe('disabling waiting as needed', function() {
 
     await startButton.click();
 
-    bp.waitEnabled = false;
+    bp.waitBarrier.enabled = false;
 
     expect(await count.getText()).toBeGreaterThan(-1);
 

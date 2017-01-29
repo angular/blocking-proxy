@@ -53,7 +53,7 @@ describe('WebDriver logger', () => {
     let mockPort = mockServer.handle.address().port;
 
     proxy = new BlockingProxy(`http://localhost:${mockPort}/wd/hub`);
-    proxy.waitEnabled = false;
+    proxy.waitBarrier.enabled = false;
     bpPort = proxy.listen(0);
     logger.setLogDir('.');
     proxy.setLogger(logger);
