@@ -3,21 +3,17 @@ import {WebDriverCommand} from './webdriver_commands';
 import {WebDriverLogger} from './webdriver_logger';
 import {WebDriverBarrier} from './webdriver_proxy';
 
-let angularWaits = require('./angular/wait.js');
+let angularWaits = require('./client_scripts/wait.js');
 
 export class AngularWaitBarrer implements WebDriverBarrier {
   // The ng-app root to use when waiting on the client.
   rootSelector: string;
   enabled: boolean;
-  seleniumAddress: string;
   logger: WebDriverLogger;
-  client: SimpleWebDriverClient;
 
-  constructor(seleniumAddress: string) {
+  constructor(private client: SimpleWebDriverClient) {
     this.enabled = true;
     this.rootSelector = '';
-    this.seleniumAddress = seleniumAddress;
-    this.client = new SimpleWebDriverClient(seleniumAddress);
   }
 
   setRootSelector(selector: string) {

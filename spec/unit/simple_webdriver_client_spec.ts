@@ -23,18 +23,16 @@ describe('Simple WebDriver Client', () => {
     scope.done();
   });
 
-  it('can make getRect calls', async() => {
+  it('can make getLocation calls', async() => {
     const elementId = '0';
-    const fakeRect = {x: 10, y: 10, width: 20, height: 20};
+    const fakeLoc = {x: 10, y: 10};
 
-    let scope =
-        nock(seleniumAddress).get(`/session/${sessionId}/element/${elementId}/rect`).reply(200, {
-          state: 'success',
-          value: fakeRect
-        });
+    let scope = nock(seleniumAddress)
+                    .get(`/session/${sessionId}/element/${elementId}/location`)
+                    .reply(200, {state: 'success', value: fakeLoc});
 
-    const rect = await client.getRect(sessionId, elementId);
+    const rect = await client.getLocation(sessionId, elementId);
     scope.done();
-    expect(rect).toEqual(fakeRect);
+    expect(rect).toEqual(fakeLoc);
   });
 });

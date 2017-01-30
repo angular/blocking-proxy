@@ -8,13 +8,23 @@ export class SimpleWebDriverClient {
     this.seleniumAddress = seleniumAddress;
   }
 
+  public execute(sessionId: string, data: string) {
+    const url = ['session', sessionId, 'execute'].join('/');
+    return this.createSeleniumRequest('POST', url, data);
+  }
+
   public executeAsync(sessionId: string, data: string) {
     const url = ['session', sessionId, 'execute_async'].join('/');
     return this.createSeleniumRequest('POST', url, data);
   }
 
-  public getRect(sessionId: string, elementId: string) {
-    const url = ['session', sessionId, 'element', elementId, 'rect'].join('/');
+  public getLocation(sessionId: string, elementId: string) {
+    const url = ['session', sessionId, 'element', elementId, 'location'].join('/');
+    return this.createSeleniumRequest('GET', url);
+  }
+
+  public getSize(sessionId: string, elementId: string) {
+    const url = ['session', sessionId, 'element', elementId, 'size'].join('/');
     return this.createSeleniumRequest('GET', url);
   }
 

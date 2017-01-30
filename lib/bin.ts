@@ -15,7 +15,7 @@ if (argv.help) {
   process.exit(0);
 }
 
-const proxy = new BlockingProxy(argv.seleniumAddress);
+const proxy = new BlockingProxy(argv.seleniumAddress, parseInt(argv.highlightDelay));
 if (argv.logDir) {
   proxy.enableLogging(argv.logDir);
 }

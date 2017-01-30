@@ -1,6 +1,8 @@
 import * as http from 'http';
 
 import {AngularWaitBarrer} from './angular_wait_barrier';
+import {HighlightDelayBarrier} from './highlight_delay_barrier';
+import {SimpleWebDriverClient} from './simple_webdriver_client';
 import {WebDriverLogger} from './webdriver_logger';
 import {WebDriverProxy} from './webdriver_proxy';
 
@@ -15,13 +17,18 @@ export class BlockingProxy {
   server: http.Server;
   logger: WebDriverLogger;
   waitBarrier: AngularWaitBarrer;
+  highlightBarrier: HighlightDelayBarrier;
   private proxy: WebDriverProxy;
 
-  constructor(seleniumAddress) {
+  constructor(seleniumAddress: string, highlightDelay: number = null) {
     this.server = http.createServer(this.requestListener.bind(this));
     this.proxy = new WebDriverProxy(seleniumAddress);
-    this.waitBarrier = new AngularWaitBarrer(seleniumAddress);
+
+    let client = new SimpleWebDriverClient(seleniumAddress);
+    this.waitBarrier = new AngularWaitBarrer(client);
+    this.highlightBarrier = new HighlightDelayBarrier(client, highlightDelay);
     this.proxy.addBarrier(this.waitBarrier);
+    this.proxy.addBarrier(this.highlightBarrier);
   }
 
   /**
@@ -80,21 +87,6 @@ export class BlockingProxy {
         } else if (message.method === 'POST') {
           response.writeHead(200);
           this.waitBarrier.rootSelector = JSON.parse(data).rootSelector;
-          response.end();
-        } else {
-          response.writeHead(405);
-          response.write('Invalid method');
-          response.end();
-        }
-        break;
-      case 'selenium_address':
-        if (message.method === 'GET') {
-          response.writeHead(200);
-          response.write(JSON.stringify({value: this.waitBarrier.seleniumAddress}));
-          response.end();
-        } else if (message.method === 'POST') {
-          response.writeHead(200);
-          this.waitBarrier.seleniumAddress = JSON.parse(data).value;
           response.end();
         } else {
           response.writeHead(405);

@@ -15,7 +15,7 @@ export function getTestEnv() {
 }
 
 beforeAll(() => {
-  bp = new BlockingProxy(WD_URL);
+  bp = new BlockingProxy(WD_URL, 250);
   bp.listen(BP_PORT);
 
   let capabilities = webdriver.Capabilities.chrome();

@@ -5,6 +5,7 @@ import * as minimist from 'minimist';
 export interface Config {
   help?: boolean;
   fork?: boolean;
+  highlightDelay?: string;
   seleniumAddress?: string;
   logDir?: string;
   port?: number;
@@ -12,7 +13,7 @@ export interface Config {
 
 const opts: minimist.Opts = {
   boolean: ['help', 'fork'],
-  string: ['port', 'seleniumAddress', 'logDir'],
+  string: ['port', 'seleniumAddress', 'highlightDelay', 'logDir'],
   alias: {
     help: ['h'],
     port: ['p'],
@@ -38,6 +39,9 @@ Options:
     --fork                  Start in fork mode. BlockingProxy will use process.send() to communicate
                                 with the parent process.
     --selenumAddress, -s    The address of the selenium remote server to proxy.
+    --highlightDelay        If specified, will highlight elements before interacting with them and 
+                                wait the specified amount of time (in ms) before allowing WebDriver
+                                to continue.
     --logDir                If specified, will create a log of WebDriver commands in this directory.
     --rootElement           Element housing ng-app, if not html or body.
 `);
