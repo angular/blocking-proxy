@@ -1,11 +1,16 @@
 import * as webdriver from 'selenium-webdriver';
+
+import {BlockingProxy} from '../../lib/blockingproxy';
+
 import {getTestEnv} from './environment';
 
 describe('ng1 synchronizing with slow pages', () => {
   let driver: webdriver.WebDriver;
+  let bp: BlockingProxy;
 
   beforeAll(() => {
-    ({driver} = getTestEnv());
+    ({driver, bp} = getTestEnv());
+    bp.waitBarrier.enabled = true;
   });
 
   beforeEach((done) => {

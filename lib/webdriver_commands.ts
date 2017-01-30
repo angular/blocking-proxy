@@ -3,7 +3,7 @@
  */
 import * as events from 'events';
 
-type HttpMethod = 'GET'|'POST'|'DELETE';
+export type HttpMethod = 'GET'|'POST'|'DELETE';
 export type paramKey = 'sessionId' | 'elementId' | 'name' | 'propertyName';
 
 export enum CommandName {

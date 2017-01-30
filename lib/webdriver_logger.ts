@@ -98,6 +98,19 @@ export class WebDriverLogger {
     });
   }
 
+  /**
+   * Log an arbitrary event to the log file.
+   *
+   * @param msg The message to log.
+   * @param sessionId The session id associated with the event.
+   * @param elapsedMs How long the event took, in ms.
+   */
+  public logEvent(msg: string, sessionId: string, elapsedMs: number) {
+    let elapsed = leftPad(elapsedMs.toString());
+    let logLine = `${this.timestamp()} | ${elapsed}ms | ${sessionId.slice(0, 6)} | ${msg}\n`;
+    this.logStream.write(logLine);
+  }
+
   private renderData(command: WebDriverCommand) {
     let dataLine = '';
     if (command.commandName === CommandName.NewSession) {

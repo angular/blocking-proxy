@@ -47,6 +47,7 @@ describe('Logger', () => {
   beforeEach(() => {
     ({driver, bp} = getTestEnv());
     logDir = fs.mkdtempSync('./tmp-');
+    bp.waitBarrier.enabled = false;
     bp.enableLogging(logDir);
   });
 
@@ -120,5 +121,23 @@ describe('Logger', () => {
 
     let logLines = await readLog();
     expect(logLines[3]).toContain('ERROR: no such element');
+  });
+
+  it('logs when waiting for Angular', async() => {
+    bp.waitBarrier.enabled = true;
+
+    await driver.get('http://localhost:8081/ng1/#/interaction');
+    let el = driver.findElement(webdriver.By.id('flux'));
+    await el.click();
+
+    let logLines = await readLog();
+    let expectedLog = [
+      'Go http://localhost:8081/ng1/#/interaction', 'Waiting for Angular', 'FindElement',
+      'Using css selector \'*[id="flux"]\'', 'Elements: 1', 'Waiting for Angular',
+      'ElementClick (1)'
+    ];
+    for (let line in expectedLog) {
+      expect(logLines[line]).toContain(expectedLog[line], `Expected line: ${line} to match`);
+    }
   });
 });

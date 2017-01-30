@@ -227,4 +227,12 @@ describe('WebDriver logger', () => {
       expect(log[line]).toEqual(expectedLog[line], `Expected line: ${line} to match`);
     }
   });
+
+  it('can log events', () => {
+    logger.logEvent('test message', 'abcdef-hijkl', 50);
+
+    let log = logger.getLog();
+    let expectedLog = `22:05:34.000 |     50ms | abcdef | test message\n`;
+    expect(log[3]).toEqual(expectedLog);
+  });
 });

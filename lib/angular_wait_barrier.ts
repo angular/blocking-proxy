@@ -97,7 +97,13 @@ export class AngularWaitBarrer implements WebDriverBarrier {
     }
 
     if (this.shouldStabilize(command)) {
-      return this.sendRequestToStabilize(command);
+      const started = Date.now();
+      return this.sendRequestToStabilize(command).then(() => {
+        const ended = Date.now();
+        if (this.logger) {
+          this.logger.logEvent('Waiting for Angular', command.sessionId, (ended - started));
+        }
+      });
     }
     return Promise.resolve(null);
   }
