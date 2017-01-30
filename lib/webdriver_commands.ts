@@ -122,6 +122,9 @@ export class WebDriverCommand extends events.EventEmitter {
   // NewSession will have a session Id in the data
   // Status just doesn't
   get sessionId(): string {
+    if (!this.getParam('sessionId') && this.url.startsWith('/session')) {
+      return this.url.split('/')[2];
+    }
     return this.getParam('sessionId');
   }
 
