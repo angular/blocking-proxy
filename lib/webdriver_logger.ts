@@ -152,7 +152,7 @@ export class WebDriverLogger {
     }
   }
 
-  timestamp(): string {
+  private timestamp(): string {
     let d = new Date();
     let hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
     let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();

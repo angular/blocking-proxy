@@ -3,9 +3,12 @@ import {WebDriverCommand} from './webdriver_commands';
 import {WebDriverLogger} from './webdriver_logger';
 import {WebDriverBarrier} from './webdriver_proxy';
 
-let angularWaits = require('./client_scripts/wait.js');
+const angularWaits = require('./client_scripts/wait.js');
 
-export class AngularWaitBarrer implements WebDriverBarrier {
+/**
+ * A barrier that uses Angular's Testability API to block commands until the application is stable.
+ */
+export class AngularWaitBarrier implements WebDriverBarrier {
   // The ng-app root to use when waiting on the client.
   rootSelector: string;
   enabled: boolean;
@@ -16,6 +19,21 @@ export class AngularWaitBarrer implements WebDriverBarrier {
     this.rootSelector = '';
   }
 
+  /**
+   * A CSS Selector for a DOM element within your Angular application.
+   * BlockingProxy will attempt to automatically find your application, but it is
+   * necessary to set rootElement in certain cases.
+   *
+   * In Angular 1, BlockingProxy will use the element your app bootstrapped to by
+   * default.  If that doesn't work, it will then search for hooks in `body` or
+   * `ng-app` elements (details here: https://git.io/v1b2r).
+   *
+   * In later versions of Angular, BlockingProxy will try to hook into all angular
+   * apps on the page. Use rootElement to limit the scope of which apps
+   * BlockingProxy waits for and searches within.
+   *
+   * @param rootSelector A selector for the root element of the Angular app.
+   */
   setRootSelector(selector: string) {
     this.rootSelector = selector;
   }
@@ -69,12 +87,12 @@ export class AngularWaitBarrer implements WebDriverBarrier {
     // See https://code.google.com/p/selenium/wiki/JsonWireProtocol for
     // descriptions of the paths.
     // We shouldn't stabilize if we haven't loaded the page yet.
-    let parts = url.split('/');
+    const parts = url.split('/');
     if (parts.length < 4) {
       return false;
     }
 
-    let commandsToWaitFor = [
+    const commandsToWaitFor = [
       'executeScript', 'screenshot', 'source', 'title', 'element', 'elements', 'execute', 'keys',
       'moveto', 'click', 'buttondown', 'buttonup', 'doubleclick', 'touch', 'get'
     ];

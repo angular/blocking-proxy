@@ -36,19 +36,10 @@ export class BPClient {
   }
 
   /**
-   * A CSS Selector for a DOM element within your Angular application.
-   * BlockingProxy will attempt to automatically find your application, but it is
-   * necessary to set rootElement in certain cases.
+   * Set the selector used to find the root element of the Angular application to wait for. See
+   * AngularWaitBarrier for more details.
    *
-   * In Angular 1, BlockingProxy will use the element your app bootstrapped to by
-   * default.  If that doesn't work, it will then search for hooks in `body` or
-   * `ng-app` elements (details here: https://git.io/v1b2r).
-   *
-   * In later versions of Angular, BlockingProxy will try to hook into all angular
-   * apps on the page. Use rootElement to limit the scope of which apps
-   * BlockingProxy waits for and searches within.
-   *
-   * @param rootSelector A selector for the root element of the Angular app.
+   * @param selector A selector, or empty string to wait for all Angular apps.
    */
   setWaitParams(rootSelector: string): Promise<any> {
     return new Promise((resolve, reject) => {

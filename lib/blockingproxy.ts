@@ -1,6 +1,6 @@
 import * as http from 'http';
 
-import {AngularWaitBarrer} from './angular_wait_barrier';
+import {AngularWaitBarrier} from './angular_wait_barrier';
 import {HighlightDelayBarrier} from './highlight_delay_barrier';
 import {SimpleWebDriverClient} from './simple_webdriver_client';
 import {WebDriverLogger} from './webdriver_logger';
@@ -16,7 +16,7 @@ export const BP_PREFIX = 'bpproxy';
 export class BlockingProxy {
   server: http.Server;
   logger: WebDriverLogger;
-  waitBarrier: AngularWaitBarrer;
+  waitBarrier: AngularWaitBarrier;
   highlightBarrier: HighlightDelayBarrier;
   private proxy: WebDriverProxy;
 
@@ -25,7 +25,7 @@ export class BlockingProxy {
     this.proxy = new WebDriverProxy(seleniumAddress);
 
     let client = new SimpleWebDriverClient(seleniumAddress);
-    this.waitBarrier = new AngularWaitBarrer(client);
+    this.waitBarrier = new AngularWaitBarrier(client);
     this.highlightBarrier = new HighlightDelayBarrier(client, highlightDelay);
     this.proxy.addBarrier(this.waitBarrier);
     this.proxy.addBarrier(this.highlightBarrier);
