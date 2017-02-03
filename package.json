@@ -40,7 +40,7 @@
     "ts-node": "^2.0.0",
     "tslint": "^4.3.1",
     "tslint-eslint-rules": "^3.1.0",
-    "typescript": "^2.0.3",
+    "typescript": "~2.0",
     "vrsource-tslint-rules": "^0.14.1",
     "webdriver-manager": "^10.2.2"
   },
