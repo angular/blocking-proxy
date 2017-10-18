@@ -190,7 +190,6 @@ describe('WebDriver logger', () => {
     cmd.handleResponse(200, {'status': 100, 'value': {'message': 'Fake Selenium Error'}});
 
     let log = logger.getLog();
-    console.log(log);
     expect(log[4]).toContain('ERROR 100: Fake Selenium Error');
   });
 

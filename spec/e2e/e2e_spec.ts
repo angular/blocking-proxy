@@ -17,7 +17,7 @@ describe('blocking proxy', function() {
               done.fail('expected driver.execute to fail, but it did not');
             },
             function(err) {
-              expect(err).toMatch('window.angular is undefined');
+              expect(err).toMatch('Error from waitForAngular');
               done();
             });
   }, 10000);
