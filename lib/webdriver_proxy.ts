@@ -25,8 +25,10 @@ export class WebDriverProxy {
     let command = parseWebDriverCommand(originalRequest.url, originalRequest.method);
 
     let replyWithError = (err) => {
-      response.writeHead(500);
-      response.write(err.toString());
+      response.writeHead(502);
+      if (err && err.toString) {
+        response.write(err.toString());
+      }
       response.end();
     };
 
