@@ -136,7 +136,7 @@ describe('WebDriver Proxy', () => {
     proxy.handleRequest(req, resp);
 
     resp.onEnd((respData) => {
-      expect(resp.writeHead.calls.first().args[0]).toBe(500);
+      expect(resp.writeHead.calls.first().args[0]).toBe(502);
       expect(respData).toEqual('Barrier failed');
 
       // Should not call the selenium server.
@@ -186,7 +186,7 @@ describe('WebDriver Proxy', () => {
     proxy.handleRequest(req, resp);
 
     resp.onEnd((data) => {
-      expect(resp.writeHead.calls.first().args[0]).toBe(500);
+      expect(resp.writeHead.calls.first().args[0]).toBe(502);
       expect(data).toEqual(ERR.toString());
       scope.done();
       done();
