@@ -101,12 +101,13 @@ describe('Logger', () => {
     let logLines = await readLog();
     let expectedLog = [
       'Go http://localhost:8081/ng1/#/interaction', 'FindElement',
-      'Using css selector \'*[id="flux"]\'', 'Elements: 0', 'ElementClick (0)',
-      'GetElementCSSValue (0)', 'GetElementAttribute (0)', '    null', 'GetElementTagName (0)',
-      '    button', 'GetElementText (0)', '    Status: fluxing', 'GetElementRect (0)'
+      /Using css selector '\*\[id="flux"\]'/, 'Elements: 0', /ElementClick \(0\.\d+-1\)/,
+      /GetElementCSSValue \(0\.\d+-1\)/, /GetElementAttribute \(0\.\d+-1\)/, '    null',
+      /GetElementTagName \(0\.\d+-1\)/, '    button', /GetElementText \(0\.\d+-1\)/,
+      '    Status: fluxing', /GetElementRect \(0\.\d+-1\)/
     ];
     for (let line in expectedLog) {
-      expect(logLines[line]).toContain(expectedLog[line], `Expected line: ${line} to match`);
+      expect(logLines[line]).toMatch(expectedLog[line], `Expected line: ${line} to match`);
     }
   });
 
@@ -120,7 +121,7 @@ describe('Logger', () => {
     }
 
     let logLines = await readLog();
-    expect(logLines[3]).toContain('ERROR: no such element');
+    expect(logLines[3]).toContain('ERROR 7: no such element');
   });
 
   it('logs when waiting for Angular', async () => {
@@ -133,11 +134,11 @@ describe('Logger', () => {
     let logLines = await readLog();
     let expectedLog = [
       'Go http://localhost:8081/ng1/#/interaction', 'Waiting for Angular', 'FindElement',
-      'Using css selector \'*[id="flux"]\'', 'Elements: 1', 'Waiting for Angular',
-      'ElementClick (1)'
+      /Using css selector '\*\[id="flux"\]'/, /Elements: 0\.\d+-1/, 'Waiting for Angular',
+      /ElementClick \(0\.\d+-1\)/
     ];
     for (let line in expectedLog) {
-      expect(logLines[line]).toContain(expectedLog[line], `Expected line: ${line} to match`);
+      expect(logLines[line]).toMatch(expectedLog[line], `Expected line: ${line} to match`);
     }
   });
 });

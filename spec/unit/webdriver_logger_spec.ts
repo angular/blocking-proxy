@@ -187,10 +187,11 @@ describe('WebDriver logger', () => {
     let cmd = parseWebDriverCommand('/session/abcdef/url', 'GET');
 
     logger.logWebDriverCommand(cmd);
-    cmd.handleResponse(500, {'state': 'Selenium Error'});
+    cmd.handleResponse(200, {'status': 100, 'value': {'message': 'Fake Selenium Error'}});
 
     let log = logger.getLog();
-    expect(log[4]).toContain('ERROR: Selenium Error');
+    console.log(log);
+    expect(log[4]).toContain('ERROR 100: Fake Selenium Error');
   });
 
   it('shows how long commands take', async () => {

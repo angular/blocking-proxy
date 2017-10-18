@@ -132,8 +132,9 @@ export class WebDriverLogger {
 
   private renderResponse(command: WebDriverCommand) {
     let respLine = '';
-    if (command.responseStatus != 200) {
-      respLine = `ERROR: ${command.responseData['state']}`;
+    const data = command.responseData;
+    if (data['status'] > 0) {
+      respLine = `ERROR ${data['status']}: ${data['value']['message']}`;
     } else if (FINDERS.indexOf(command.commandName) !== -1) {
       let els = command.responseData['value'];
       if (!Array.isArray(els)) {
