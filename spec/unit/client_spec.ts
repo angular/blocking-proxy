@@ -10,21 +10,21 @@ describe('BlockingProxy Client', () => {
     client = new BPClient(`http://localhost:${bpPort}`);
   });
 
-  it('should toggle waiting', async() => {
+  it('should toggle waiting', async () => {
     expect(bp.waitBarrier.enabled).toBe(true);
 
     await client.setWaitEnabled(false);
     expect(bp.waitBarrier.enabled).toBe(false);
   });
 
-  it('can get whether wait is enabled', async() => {
+  it('can get whether wait is enabled', async () => {
     bp.waitBarrier.enabled = true;
     expect(await client.isWaitEnabled()).toBeTruthy();
     bp.waitBarrier.enabled = false;
     expect(await client.isWaitEnabled()).toBeFalsy();
   });
 
-  it('allows changing the root selector', async() => {
+  it('allows changing the root selector', async () => {
     bp.waitBarrier.rootSelector = '';
     const newRoot = 'div#app';
 

@@ -14,7 +14,7 @@ describe('highlight delay barrier', () => {
     highlight = new HighlightDelayBarrier(client, 0);
   });
 
-  it('blocks for the set amount of time', async() => {
+  it('blocks for the set amount of time', async () => {
     highlight.delay = 200;
     let cmd = parseWebDriverCommand('/session/abcdef/element/0/click', 'POST');
 
@@ -29,7 +29,7 @@ describe('highlight delay barrier', () => {
     expect(client.execute).toHaveBeenCalled();
   });
 
-  it('doesn\'t do anything if delay isn\'t set', async() => {
+  it('doesn\'t do anything if delay isn\'t set', async () => {
     highlight.delay = 0;
     let cmd = parseWebDriverCommand('/session/abcdef/element/0/click', 'POST');
 

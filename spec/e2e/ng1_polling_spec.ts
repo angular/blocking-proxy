@@ -14,11 +14,11 @@ describe('disabling waiting as needed', function() {
     ({driver, bp} = getTestEnv());
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     await driver.get('http://localhost:8081/ng1/#/polling');
   });
 
-  it('avoids timeouts', async() => {
+  it('avoids timeouts', async () => {
     bp.waitBarrier.enabled = true;
 
     let startButton = await driver.findElement(By.id('pollstarter'));

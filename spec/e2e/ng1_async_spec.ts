@@ -27,7 +27,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await el.click();
   }
 
-  it('waits for http calls', async() => {
+  it('waits for http calls', async () => {
     await expectText('[ng-bind="slowHttpStatus"]', 'not started');
 
     await clickElement('[ng-click="slowHttp()"]');
@@ -35,7 +35,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowHttpStatus"]', 'done');
   }, 10000);
 
-  it('waits for long javascript execution', async() => {
+  it('waits for long javascript execution', async () => {
     await expectText('[ng-bind="slowFunctionStatus"]', 'not started');
 
     await clickElement('[ng-click="slowFunction()"]');
@@ -43,7 +43,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowFunctionStatus"]', 'done');
   }, 10000);
 
-  it('DOES NOT wait for timeout', async() => {
+  it('DOES NOT wait for timeout', async () => {
     await expectText('[ng-bind="slowTimeoutStatus"]', 'not started');
 
     await clickElement('[ng-click="slowTimeout()"]');
@@ -51,7 +51,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowTimeoutStatus"]', 'pending...');
   }, 10000);
 
-  it('waits for $timeout', async() => {
+  it('waits for $timeout', async () => {
     await expectText('[ng-bind="slowAngularTimeoutStatus"]', 'not started');
 
     await clickElement('[ng-click="slowAngularTimeout()"]');
@@ -59,7 +59,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowAngularTimeoutStatus"]', 'done');
   }, 10000);
 
-  it('waits for $timeout then a promise', async() => {
+  it('waits for $timeout then a promise', async () => {
     await expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'not started');
 
     await clickElement('[ng-click="slowAngularTimeoutPromise()"]');
@@ -67,7 +67,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowAngularTimeoutPromiseStatus"]', 'done');
   }, 10000);
 
-  it('waits for long http call then a promise', async() => {
+  it('waits for long http call then a promise', async () => {
     await expectText('[ng-bind="slowHttpPromiseStatus"]', 'not started');
 
     await clickElement('[ng-click="slowHttpPromise()"]');
@@ -75,7 +75,7 @@ describe('ng1 synchronizing with slow pages', () => {
     await expectText('[ng-bind="slowHttpPromiseStatus"]', 'done');
   }, 10000);
 
-  it('waits for slow routing changes', async() => {
+  it('waits for slow routing changes', async () => {
     await expectText('[ng-bind="routingChangeStatus"]', 'not started');
 
     await clickElement('[ng-click="routingChange()"]');
@@ -84,7 +84,7 @@ describe('ng1 synchronizing with slow pages', () => {
     expect(source).toMatch('polling mechanism');
   }, 10000);
 
-  it('waits for slow ng-include templates to load', async() => {
+  it('waits for slow ng-include templates to load', async () => {
     await expectText('.included', 'fast template contents');
 
     await clickElement('[ng-click="changeTemplateUrl()"]');
