@@ -10,17 +10,19 @@ let driver: webdriver.WebDriver;
 let bp: BlockingProxy;
 let client: BPClient;
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+
 export function getTestEnv() {
   return {driver, bp, client};
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   bp = new BlockingProxy(WD_URL, 250);
   bp.listen(BP_PORT);
 
   let capabilities = webdriver.Capabilities.chrome();
   driver = new webdriver.Builder().usingServer(BP_URL).withCapabilities(capabilities).build();
-  driver.manage().timeouts().setScriptTimeout(20000);
+  await driver.manage().timeouts().setScriptTimeout(12000);
 
   client = new BPClient(BP_URL);
 });
