@@ -3,8 +3,8 @@
  */
 import * as events from 'events';
 
-export type HttpMethod = 'GET' | 'POST' | 'DELETE';
-export type paramKey = 'sessionId' | 'elementId' | 'name' | 'propertyName';
+export type HttpMethod = 'GET'|'POST'|'DELETE';
+export type paramKey = 'sessionId'|'elementId'|'name'|'propertyName';
 
 export enum CommandName {
   NewSession,

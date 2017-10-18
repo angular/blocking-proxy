@@ -15,7 +15,7 @@ describe('WebDriver command parser', () => {
   let testBarrier: TestBarrier;
   let port: number;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     mockServer = getMockSelenium();
     mockServer.start();
     let mockPort = mockServer.handle.address().port;
@@ -36,7 +36,7 @@ describe('WebDriver command parser', () => {
     await driver.get('http://example.com');
   });
 
-  it('parses session commands', async() => {
+  it('parses session commands', async () => {
     let session = await driver.getSession();
     let sessionId = session.getId();
     await driver.quit();
@@ -49,7 +49,7 @@ describe('WebDriver command parser', () => {
     expect(testBarrier.commands[1].sessionId).toEqual(sessionId);
   });
 
-  it('parses url commands', async() => {
+  it('parses url commands', async () => {
     await driver.getCurrentUrl();
     await driver.navigate().back();
     await driver.navigate().forward();
@@ -64,7 +64,7 @@ describe('WebDriver command parser', () => {
     ]);
   });
 
-  it('parses timeout commands', async() => {
+  it('parses timeout commands', async () => {
     await driver.manage().timeouts().setScriptTimeout(2468);
 
     let recentCommands = testBarrier.getCommands();
@@ -73,7 +73,7 @@ describe('WebDriver command parser', () => {
     expect(timeoutData['ms']).toEqual(2468);
   });
 
-  it('parses element commands', async() => {
+  it('parses element commands', async () => {
     let el = driver.findElement(webdriver.By.css('.test'));
     await el.click();
     await el.getCssValue('fake-color');
@@ -110,7 +110,7 @@ describe('WebDriver command parser', () => {
     ]);
   });
 
-  it('parses actions', async() => {
+  it('parses actions', async () => {
     let el = driver.findElement(webdriver.By.css('.test'));
 
     await driver.actions().mouseMove({x: 10, y: 10}).dragAndDrop(el, {x: 20, y: 20}).perform();
@@ -123,7 +123,7 @@ describe('WebDriver command parser', () => {
     expect(testBarrier.commands[3].data).toEqual({xoffset: 10, yoffset: 10});
   });
 
-  it('parses alert commands', async() => {
+  it('parses alert commands', async () => {
     await driver.switchTo().alert().dismiss();
     await driver.switchTo().alert().accept();
 

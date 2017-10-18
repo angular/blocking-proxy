@@ -55,7 +55,7 @@ describe('Logger', () => {
     rimraf(logDir, done);
   });
 
-  it('creates a log file', async() => {
+  it('creates a log file', async () => {
     await driver.get('http://localhost:8081/ng1/#/async');
     let session = await driver.getSession();
 
@@ -63,7 +63,7 @@ describe('Logger', () => {
     expect(fs.existsSync(logPath())).toBeTruthy();
   });
 
-  it('logs multiple sessions to the same file', async() => {
+  it('logs multiple sessions to the same file', async () => {
     let capabilities = webdriver.Capabilities.chrome();
     let otherDriver =
         new webdriver.Builder().usingServer(BP_URL).withCapabilities(capabilities).build();
@@ -87,7 +87,7 @@ describe('Logger', () => {
     await otherDriver.quit();
   });
 
-  it('logs information about element finders', async() => {
+  it('logs information about element finders', async () => {
     await driver.get('http://localhost:8081/ng1/#/interaction');
     let el = driver.findElement(webdriver.By.id('flux'));
     await el.click();
@@ -110,7 +110,7 @@ describe('Logger', () => {
     }
   });
 
-  it('handles selenium errors', async() => {
+  it('handles selenium errors', async () => {
     await driver.get('http://localhost:8081/ng1/#/interaction');
     try {
       let el = driver.findElement(webdriver.By.css('.none'));
@@ -123,7 +123,7 @@ describe('Logger', () => {
     expect(logLines[3]).toContain('ERROR: no such element');
   });
 
-  it('logs when waiting for Angular', async() => {
+  it('logs when waiting for Angular', async () => {
     bp.waitBarrier.enabled = true;
 
     await driver.get('http://localhost:8081/ng1/#/interaction');

@@ -63,7 +63,7 @@ describe('WebDriver logger', () => {
     mockServer.stop();
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jasmine.clock().install();
     jasmine.clock().mockDate(start);
 
@@ -87,7 +87,7 @@ describe('WebDriver logger', () => {
     expect(logger.logName).not.toEqual(otherLogger.logName);
   });
 
-  it('logs session commands', async() => {
+  it('logs session commands', async () => {
     let session = await driver.getSession();
     let shortSession = session.getId().slice(0, 6);
     await driver.quit();
@@ -99,7 +99,7 @@ describe('WebDriver logger', () => {
     expect(log[3]).toContain(shortSession);
   });
 
-  it('logs url commands', async() => {
+  it('logs url commands', async () => {
     await driver.getCurrentUrl();
 
     let log = logger.getLog();
@@ -108,7 +108,7 @@ describe('WebDriver logger', () => {
     expect(log[2]).toContain('Go http://example.com');
   });
 
-  it('parses commands that affect elements', async() => {
+  it('parses commands that affect elements', async () => {
     let session = await driver.getSession();
     let shortSession = session.getId().slice(0, 6);
     logger.reset();
@@ -149,7 +149,7 @@ describe('WebDriver logger', () => {
     }
   });
 
-  it('parses commands that read elements', async() => {
+  it('parses commands that read elements', async () => {
     logger.reset();
     let session = await driver.getSession();
     let shortSession = session.getId().slice(0, 6);
@@ -193,7 +193,7 @@ describe('WebDriver logger', () => {
     expect(log[4]).toContain('ERROR: Selenium Error');
   });
 
-  it('shows how long commands take', async() => {
+  it('shows how long commands take', async () => {
     let cmd = parseWebDriverCommand('/session/abcdef/url', 'GET');
     logger.logWebDriverCommand(cmd);
 
@@ -209,7 +209,7 @@ describe('WebDriver logger', () => {
     expect(log[3]).toContain('22:05:34.000 |   1234ms | abcdef | GetCurrentURL');
   });
 
-  it('handles unknown commands', async() => {
+  it('handles unknown commands', async () => {
     let session = await driver.getSession();
     let shortSession = session.getId().slice(0, 6);
 

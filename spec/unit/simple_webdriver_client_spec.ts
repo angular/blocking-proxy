@@ -12,18 +12,16 @@ describe('Simple WebDriver Client', () => {
     client = new SimpleWebDriverClient(seleniumAddress);
   });
 
-  it('can make executeAsync calls', async() => {
-    let scope =
-        nock(seleniumAddress).post(`/session/${sessionId}/execute_async`, fakeScript).reply(200, {
-          state: 'success',
-          value: ''
-        });
+  it('can make executeAsync calls', async () => {
+    let scope = nock(seleniumAddress)
+                    .post(`/session/${sessionId}/execute_async`, fakeScript)
+                    .reply(200, {state: 'success', value: ''});
 
     await client.executeAsync(sessionId, fakeScript);
     scope.done();
   });
 
-  it('can make getLocation calls', async() => {
+  it('can make getLocation calls', async () => {
     const elementId = '0';
     const fakeLoc = {x: 10, y: 10};
 
