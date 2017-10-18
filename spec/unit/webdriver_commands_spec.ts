@@ -70,7 +70,7 @@ describe('WebDriver command parser', () => {
     let recentCommands = testBarrier.getCommands();
     expect(recentCommands[2]).toEqual(CommandName.SetTimeouts);
     let timeoutData = testBarrier.commands[2].data;
-    expect(timeoutData['ms']).toEqual(2468);
+    expect(timeoutData['script']).toEqual(2468);
   });
 
   it('parses element commands', async () => {
