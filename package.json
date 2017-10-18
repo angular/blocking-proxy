@@ -50,6 +50,9 @@
   },
   "typings": "built/lib/index.d.ts",
   "main": "built/lib/index.js",
+  "bin": {
+    "blocking-proxy": "built/lib/bin.js"
+  },
   "scripts": {
     "prepublish": "gulp prepublish",
     "start": "node built/lib/bin.js",

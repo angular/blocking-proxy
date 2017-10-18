@@ -20,6 +20,7 @@ if (argv.logDir) {
   proxy.enableLogging(argv.logDir);
 }
 let port = proxy.listen(argv.port);
+console.log(`Listening on :${port}`);
 if (argv.fork) {
   process.send({ready: true, port: port});
   process.on('disconnect', function() {
