@@ -9,7 +9,6 @@ function getLogId() {
   return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(36).slice(0, 8);
 }
 
-// Super proprietary left pad implementation. Do not copy plzkthx.
 function leftPad(field: string): string {
   const fieldWidth = 6;
   let padding = fieldWidth - field.length;
