@@ -51,6 +51,11 @@ export class WebDriverProxy {
     options.port = parseInt(parsedUrl.port);
     options.headers = originalRequest.headers;
 
+    if (options.headers) {
+      // Remove original req host so http can insert the correct host to hit selenium server
+      delete options.headers.host;
+    }
+
     let forwardedRequest = http.request(options);
 
     // clang-format off
@@ -86,4 +91,6 @@ export class WebDriverProxy {
  * rejected, the proxy will reply with an error code and the result of the promise and the command
  * will not be forwarded to Selenium.
  */
-export interface WebDriverBarrier { onCommand(command: WebDriverCommand): Promise<void>; }
+export interface WebDriverBarrier {
+  onCommand(command: WebDriverCommand): Promise<void>;
+}

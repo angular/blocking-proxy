@@ -18,9 +18,13 @@ describe('WebDriver Proxy', () => {
     resp.writeHead = jasmine.createSpy('spy');
     req.url = '/session/sessionId/get';
     req.method = 'GET';
+    req.headers = {host: 'proxyHost'};
     const responseData = {value: 'selenium response'};
 
-    let scope = nock(proxy.seleniumAddress).get('/session/sessionId/get').reply(200, responseData);
+    let scope = nock(proxy.seleniumAddress).get('/session/sessionId/get').reply(function() {
+      expect(this.req.headers.host).not.toEqual('proxyHost');
+      return [200, responseData];
+    });
 
     proxy.handleRequest(req, resp);
 
